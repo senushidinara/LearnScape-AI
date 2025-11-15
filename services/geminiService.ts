@@ -1,7 +1,8 @@
 import { GoogleGenAI, Type } from "@google/genai";
 import { WorldData, Mood, UserAnalytics } from '../types';
 
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+const apiKey = process.env.API_KEY;
+const ai = apiKey ? new GoogleGenAI({ apiKey }) : null;
 
 const quizQuestionSchema = {
     type: Type.OBJECT,
@@ -108,7 +109,137 @@ const responseSchema = {
     required: ["worldName", "description", "zones", "boss", "conceptMap"]
 };
 
+const generateMockWorld = (notes: string): WorldData => {
+    const today = new Date().toISOString().split('T')[0];
+    const topics = notes.split('\n').filter(line => line.trim().length > 0).slice(0, 3);
+
+    return {
+        worldName: "The Learning Realm",
+        description: "A place to master the concepts in your notes through quests, treasures, and epic boss battles.",
+        zones: [
+            {
+                name: "Foundation Zone",
+                description: "Start your journey by mastering the fundamentals.",
+                themeColor: "#4F46E5",
+                quest: {
+                    id: "q1",
+                    question: "What is the main topic you want to learn about?",
+                    options: ["Fundamentals", "Advanced Concepts", "Practical Applications", "Theory"],
+                    correctAnswer: "Fundamentals",
+                    explanation: "Starting with fundamentals helps build a strong foundation.",
+                    masteryLevel: 0,
+                    nextReviewDate: today
+                },
+                treasure: {
+                    id: "t1",
+                    term: "Core Concept",
+                    definition: "The foundational idea that everything else builds upon.",
+                    masteryLevel: 0,
+                    nextReviewDate: today
+                }
+            },
+            {
+                name: "Practice Zone",
+                description: "Apply what you've learned through practical exercises.",
+                themeColor: "#10B981",
+                quest: {
+                    id: "q2",
+                    question: "How do you best learn new concepts?",
+                    options: ["By doing", "By reading", "By listening", "By discussing"],
+                    correctAnswer: "By doing",
+                    explanation: "Active learning through practice is one of the most effective methods.",
+                    masteryLevel: 0,
+                    nextReviewDate: today
+                },
+                treasure: {
+                    id: "t2",
+                    term: "Practice",
+                    definition: "Repeated application of knowledge to reinforce learning.",
+                    masteryLevel: 0,
+                    nextReviewDate: today
+                }
+            },
+            {
+                name: "Mastery Zone",
+                description: "Test your understanding and push toward mastery.",
+                themeColor: "#F59E0B",
+                quest: {
+                    id: "q3",
+                    question: "What indicates true mastery of a topic?",
+                    options: ["Understanding principles", "Memorizing facts", "Passing tests", "All of the above"],
+                    correctAnswer: "All of the above",
+                    explanation: "True mastery involves understanding, retention, and practical application.",
+                    masteryLevel: 0,
+                    nextReviewDate: today
+                },
+                treasure: {
+                    id: "t3",
+                    term: "Mastery",
+                    definition: "Deep understanding and ability to apply knowledge in various contexts.",
+                    masteryLevel: 0,
+                    nextReviewDate: today
+                }
+            }
+        ],
+        boss: {
+            name: "The Knowledge Guardian",
+            description: "A wise but challenging guardian who tests the depths of your understanding.",
+            weakness: "Critical thinking and integration of concepts",
+            battle: [
+                {
+                    id: "b1",
+                    question: "Why is understanding more important than memorization?",
+                    options: ["It helps with transfer of knowledge", "It reduces cognitive load", "It enables problem-solving", "All of the above"],
+                    correctAnswer: "All of the above",
+                    explanation: "Understanding provides the foundation for applying knowledge in new situations.",
+                    masteryLevel: 0,
+                    nextReviewDate: today
+                },
+                {
+                    id: "b2",
+                    question: "What is the role of spaced repetition in learning?",
+                    options: ["To bore yourself", "To reinforce memory", "To waste time", "To avoid forgetting"],
+                    correctAnswer: "To reinforce memory",
+                    explanation: "Spaced repetition leverages the spacing effect to enhance long-term retention.",
+                    masteryLevel: 0,
+                    nextReviewDate: today
+                },
+                {
+                    id: "b3",
+                    question: "How does active learning differ from passive learning?",
+                    options: ["Active learning requires engagement", "Passive learning is more effective", "There is no difference", "Active learning is easier"],
+                    correctAnswer: "Active learning requires engagement",
+                    explanation: "Active learning involves the learner in the process, leading to better outcomes.",
+                    masteryLevel: 0,
+                    nextReviewDate: today
+                }
+            ]
+        },
+        conceptMap: {
+            nodes: [
+                { id: "n1", label: "Learning", x: 50, y: 10 },
+                { id: "n2", label: "Understanding", x: 20, y: 40 },
+                { id: "n3", label: "Practice", x: 80, y: 40 },
+                { id: "n4", label: "Memory", x: 35, y: 70 },
+                { id: "n5", label: "Application", x: 65, y: 70 }
+            ],
+            edges: [
+                { from: "n1", to: "n2", label: "requires" },
+                { from: "n1", to: "n3", label: "needs" },
+                { from: "n2", to: "n4", label: "strengthens" },
+                { from: "n3", to: "n5", label: "enables" },
+                { from: "n4", to: "n5", label: "supports" }
+            ]
+        }
+    };
+};
+
 export const generateWorld = async (notes: string, mood: Mood, analytics?: UserAnalytics): Promise<WorldData> => {
+    if (!ai) {
+        console.warn("API key not configured. Using mock data.");
+        return generateMockWorld(notes);
+    }
+
     const today = new Date().toISOString().split('T')[0];
     const moodInstruction = `
         The student's current mood is: ${mood}.
@@ -121,7 +252,7 @@ export const generateWorld = async (notes: string, mood: Mood, analytics?: UserA
     if (analytics) {
         const questAccuracy = analytics.questAttempts > 0 ? (analytics.questSuccesses / analytics.questAttempts) * 100 : 100;
         const bossAccuracy = analytics.bossAttempts > 0 ? (analytics.bossSuccesses / analytics.bossAttempts) * 100 : 100;
-        
+
         let stylePreference = 'balanced';
         if(analytics.questAttempts > analytics.treasureAttempts + 2) stylePreference = 'quizzes and challenges';
         if(analytics.treasureAttempts > analytics.questAttempts + 2) stylePreference = 'flashcards and direct review';
@@ -140,7 +271,7 @@ export const generateWorld = async (notes: string, mood: Mood, analytics?: UserA
         - The world should feel like a new, evolved version of the previous one, not a completely different topic. Maintain the core concepts from the original notes.
         `;
     }
-    
+
     const prompt = `
         You are LearnScape AI, a game designer that transforms educational notes into an exciting, personalized 3D learning game world.
         Your task is to analyze the user's notes, identify key concepts, and generate a complete game world structure as a JSON object.
@@ -175,14 +306,15 @@ export const generateWorld = async (notes: string, mood: Mood, analytics?: UserA
                 responseSchema: responseSchema,
             },
         });
-        
+
         const jsonText = response.text.trim();
         const parsedData = JSON.parse(jsonText);
-        
+
         return parsedData as WorldData;
 
     } catch(error) {
         console.error("Error generating world with Gemini:", error);
-        throw new Error("Failed to parse world data from AI response.");
+        console.warn("Falling back to mock data.");
+        return generateMockWorld(notes);
     }
 };
