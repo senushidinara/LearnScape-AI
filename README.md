@@ -7,7 +7,7 @@
 **LearnScape AI** transforms traditional learning into an immersive, adaptive gaming experience by automatically generating personalized 3D learning worlds from students' study materials.  
 Using advanced AI and neuroscience principles, we turn any subject into an engaging adventure that adapts to individual learning styles, moods, and performance levels.
 
-![LearnScape AI Demo](https://via.placeholder.com/800x400/4F46E5/FFFFFF?text=LearnScape+AI+Demo)
+![LearnScape AI Screenshot](https://raw.githubusercontent.com/senushidinara/LearnScape-AI/main/IMG_8029.jpeg)
 
 ---
 
