@@ -6,13 +6,27 @@ interface QuestModalProps {
   data: QuizQuestion[] | Flashcard;
   title: string;
   onClose: () => void;
-  onUpdateMastery: (itemId: string, success: boolean) => void;
+  onSessionComplete: () => void;
+  onUpdateMastery: (itemId: string, success: boolean, itemType: 'quest' | 'treasure' | 'boss_question') => void;
 }
 
-const QuestContent: React.FC<{ questions: QuizQuestion[], onUpdateMastery: (itemId: string, success: boolean) => void }> = ({ questions, onUpdateMastery }) => {
+const SRSFeedback: React.FC<{ onSessionComplete: () => void }> = ({ onSessionComplete }) => (
+    <div className="p-4 rounded-lg bg-indigo-900/50 text-center transition-opacity duration-300">
+        <h4 className="font-bold text-lg text-indigo-300">Knowledge Reinforced!</h4>
+        <p className="mt-2 text-gray-300">
+            Fantastic effort! You've just strengthened the neural pathways for this concept. By reviewing information right as you start to forget it, you're actively fighting the 'forgetting curve'. This spaced repetition is key to transferring knowledge into your long-term memory for true mastery.
+        </p>
+        <button onClick={onSessionComplete} className="mt-4 bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded-lg">
+            Continue Adventure
+        </button>
+    </div>
+);
+
+const QuestContent: React.FC<{ questions: QuizQuestion[], onUpdateMastery: (itemId: string, success: boolean, itemType: 'quest' | 'boss_question') => void, onSessionComplete: () => void, itemType: 'quest' | 'boss_question' }> = ({ questions, onUpdateMastery, onSessionComplete, itemType }) => {
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
     const [selectedOption, setSelectedOption] = useState<string | null>(null);
     const [showFeedback, setShowFeedback] = useState(false);
+    const [sessionCompleted, setSessionCompleted] = useState(false);
 
     const question = questions[currentQuestionIndex];
     const isCorrect = selectedOption === question.correctAnswer;
@@ -23,19 +37,23 @@ const QuestContent: React.FC<{ questions: QuizQuestion[], onUpdateMastery: (item
         const correct = option === question.correctAnswer;
         setSelectedOption(option);
         setShowFeedback(true);
-        onUpdateMastery(question.id, correct);
+        onUpdateMastery(question.id, correct, itemType);
     };
 
     const handleNext = () => {
-        if (!isLastQuestion) {
+        if (isLastQuestion) {
+            setSessionCompleted(true);
+        } else {
             setCurrentQuestionIndex(currentQuestionIndex + 1);
             setSelectedOption(null);
             setShowFeedback(false);
-        } else {
-             // You could add a completion state here
         }
     };
     
+    if (sessionCompleted) {
+        return <SRSFeedback onSessionComplete={onSessionComplete} />;
+    }
+
     return (
         <div>
             <p className="text-gray-400 mb-2">Question {currentQuestionIndex + 1} of {questions.length}</p>
@@ -56,7 +74,7 @@ const QuestContent: React.FC<{ questions: QuizQuestion[], onUpdateMastery: (item
                         buttonClass += "bg-gray-700 border-gray-600 hover:bg-gray-600 hover:border-purple-500 text-gray-200";
                     }
                     return (
-                        <button key={index} onClick={() => handleOptionSelect(option)} className={buttonClass}>
+                        <button key={index} onClick={() => handleOptionSelect(option)} className={buttonClass} disabled={showFeedback}>
                             {option}
                         </button>
                     )
@@ -67,22 +85,26 @@ const QuestContent: React.FC<{ questions: QuizQuestion[], onUpdateMastery: (item
                 <div className={`mt-6 p-4 rounded-lg ${isCorrect ? 'bg-green-900/50' : 'bg-red-900/50'}`}>
                     <h4 className="font-bold text-lg">{isCorrect ? 'Correct!' : 'Not Quite!'}</h4>
                     <p className="mt-1">{question.explanation}</p>
-                    {!isLastQuestion && 
-                        <button onClick={handleNext} className="mt-4 bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded">
-                            Next Question
-                        </button>
-                    }
+                    <button onClick={handleNext} className="mt-4 bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded">
+                        {isLastQuestion ? 'Finish Session' : 'Next Question'}
+                    </button>
                 </div>
             )}
         </div>
     );
 };
 
-const TreasureContent: React.FC<{ flashcard: Flashcard, onUpdateMastery: (itemId: string, success: boolean) => void, onClose: () => void }> = ({ flashcard, onUpdateMastery, onClose }) => {
+const TreasureContent: React.FC<{ flashcard: Flashcard, onUpdateMastery: (itemId: string, success: boolean, itemType: 'treasure') => void, onSessionComplete: () => void }> = ({ flashcard, onUpdateMastery, onSessionComplete }) => {
+    const [feedbackShown, setFeedbackShown] = useState(false);
+    
     const handleReview = (success: boolean) => {
-        onUpdateMastery(flashcard.id, success);
-        onClose();
+        onUpdateMastery(flashcard.id, success, 'treasure');
+        setFeedbackShown(true);
     };
+
+    if (feedbackShown) {
+        return <SRSFeedback onSessionComplete={onSessionComplete} />;
+    }
     
     return (
         <div>
@@ -105,7 +127,7 @@ const TreasureContent: React.FC<{ flashcard: Flashcard, onUpdateMastery: (itemId
     );
 };
 
-const QuestModal: React.FC<QuestModalProps> = ({ type, data, title, onClose, onUpdateMastery }) => {
+const QuestModal: React.FC<QuestModalProps> = ({ type, data, title, onClose, onSessionComplete, onUpdateMastery }) => {
     return (
         <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4" onClick={onClose}>
             <div 
@@ -117,8 +139,8 @@ const QuestModal: React.FC<QuestModalProps> = ({ type, data, title, onClose, onU
                     <button onClick={onClose} className="text-gray-400 hover:text-white text-2xl">&times;</button>
                 </div>
                 
-                {(type === 'quest' || type === 'battle') && <QuestContent questions={data as QuizQuestion[]} onUpdateMastery={onUpdateMastery} />}
-                {type === 'treasure' && <TreasureContent flashcard={data as Flashcard} onUpdateMastery={onUpdateMastery} onClose={onClose} />}
+                {(type === 'quest' || type === 'battle') && <QuestContent questions={data as QuizQuestion[]} onUpdateMastery={onUpdateMastery as (itemId: string, success: boolean, itemType: 'quest' | 'boss_question') => void} onSessionComplete={onSessionComplete} itemType={type === 'battle' ? 'boss_question' : 'quest'} />}
+                {type === 'treasure' && <TreasureContent flashcard={data as Flashcard} onUpdateMastery={onUpdateMastery as (itemId: string, success: boolean, itemType: 'treasure') => void} onSessionComplete={onSessionComplete} />}
             </div>
         </div>
     );

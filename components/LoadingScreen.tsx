@@ -2,7 +2,11 @@
 import React, { useState, useEffect } from 'react';
 import { LOADING_MESSAGES } from '../constants';
 
-const LoadingScreen: React.FC = () => {
+interface LoadingScreenProps {
+    onCancel: () => void;
+}
+
+const LoadingScreen: React.FC<LoadingScreenProps> = ({ onCancel }) => {
     const [messageIndex, setMessageIndex] = useState(0);
 
     useEffect(() => {
@@ -26,6 +30,12 @@ const LoadingScreen: React.FC = () => {
                 <h2 className="text-2xl font-bold text-gray-200">Generating Your LearnScape...</h2>
                 <p className="mt-2 text-lg text-gray-400 transition-opacity duration-500">{LOADING_MESSAGES[messageIndex]}</p>
             </div>
+            <button 
+                onClick={onCancel}
+                className="mt-8 bg-gray-700/50 hover:bg-gray-700 text-gray-300 font-semibold py-2 px-6 rounded-lg transition-colors duration-200 border border-gray-600"
+            >
+                &larr; Back
+            </button>
         </div>
     );
 };

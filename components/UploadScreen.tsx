@@ -3,27 +3,66 @@ import React, { useState, useCallback } from 'react';
 import { Mood } from '../types';
 import { MOOD_OPTIONS } from '../constants';
 import { BookIcon, UploadIcon } from './icons';
+import * as pdfjsLib from 'pdfjs-dist';
+
+// Configure the PDF.js worker. This is required for PDF.js to work in a web environment.
+pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdn.jsdelivr.net/npm/pdfjs-dist@4.4.168/build/pdf.worker.min.mjs`;
 
 interface UploadScreenProps {
   onGenerate: (notes: string, mood: Mood) => void;
   error: string | null;
+  onBackToWorld?: () => void;
 }
 
-const UploadScreen: React.FC<UploadScreenProps> = ({ onGenerate, error }) => {
+const UploadScreen: React.FC<UploadScreenProps> = ({ onGenerate, error, onBackToWorld }) => {
   const [notes, setNotes] = useState('');
   const [selectedMood, setSelectedMood] = useState<Mood>('motivated');
   const [fileName, setFileName] = useState<string>('');
+  const [isParsing, setIsParsing] = useState(false);
 
-  const handleFileChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = useCallback(async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
       setFileName(file.name);
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        const text = e.target?.result as string;
-        setNotes(text);
-      };
-      reader.readAsText(file);
+      setIsParsing(true); // Start parsing indicator
+      
+      if (file.type === 'application/pdf') {
+        const reader = new FileReader();
+        reader.onload = async (e) => {
+          try {
+            const typedarray = new Uint8Array(e.target?.result as ArrayBuffer);
+            const pdf = await pdfjsLib.getDocument(typedarray).promise;
+            let content = '';
+            for (let i = 1; i <= pdf.numPages; i++) {
+              const page = await pdf.getPage(i);
+              const textContent = await page.getTextContent();
+              // 'item' is of type TextItem, which has a 'str' property
+              content += textContent.items.map(item => (item as { str: string }).str).join(' ');
+              content += '\n'; // Add a newline between pages
+            }
+            setNotes(content);
+          } catch (pdfError) {
+            console.error("Error parsing PDF:", pdfError);
+            setNotes('');
+            setFileName('Error parsing PDF');
+          } finally {
+            setIsParsing(false); // End parsing
+          }
+        };
+        reader.readAsArrayBuffer(file);
+      } else { // Assume .txt or other text format
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const text = e.target?.result as string;
+          setNotes(text);
+          setIsParsing(false);
+        };
+        reader.onerror = () => {
+          setIsParsing(false);
+          setFileName('Error reading file');
+        }
+        reader.readAsText(file);
+      }
     }
   }, []);
 
@@ -62,9 +101,9 @@ const UploadScreen: React.FC<UploadScreenProps> = ({ onGenerate, error }) => {
                     />
                     <label htmlFor="file-upload" className="absolute bottom-3 right-3 flex items-center gap-2 px-3 py-1.5 text-sm bg-gray-700 hover:bg-gray-600 text-gray-300 rounded-md cursor-pointer transition-colors">
                         <UploadIcon className="h-4 w-4" />
-                        <span>{fileName || 'Upload .txt'}</span>
+                        <span>{isParsing ? 'Parsing...' : (fileName || 'Upload .txt, .pdf')}</span>
                     </label>
-                    <input id="file-upload" type="file" accept=".txt" className="hidden" onChange={handleFileChange} />
+                    <input id="file-upload" type="file" accept=".txt,.pdf" className="hidden" onChange={handleFileChange} />
                 </div>
             </div>
 
@@ -84,13 +123,22 @@ const UploadScreen: React.FC<UploadScreenProps> = ({ onGenerate, error }) => {
                 </div>
             </div>
 
-            <div>
+            <div className="flex items-center gap-4">
+                 {onBackToWorld && (
+                    <button
+                        type="button"
+                        onClick={onBackToWorld}
+                        className="w-full py-4 text-lg font-bold text-gray-300 bg-gray-600 hover:bg-gray-700 rounded-lg shadow-lg transform hover:scale-105 transition-all duration-300"
+                    >
+                        &larr; Back to World
+                    </button>
+                )}
                 <button
                     type="submit"
                     className="w-full py-4 text-lg font-bold text-white bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 rounded-lg shadow-lg shadow-purple-500/20 transform hover:scale-105 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
-                    disabled={!notes.trim()}
+                    disabled={!notes.trim() || isParsing}
                 >
-                    Generate World
+                    {isParsing ? 'Processing File...' : 'Generate World'}
                 </button>
             </div>
         </form>
