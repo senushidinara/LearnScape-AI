@@ -30,7 +30,8 @@ def generate_math_visualization(equation, concept_type):
     
     query = wolfram_queries.get(concept_type, f"plot {equation}")
     result = wolfram_client.query(query)
-    return parse_wolfram_visualization(result)
+    return parse_wolfram_visualization(result)![IMG_3926](https://github.com/user-attachments/assets/366d7411-7558-42f8-841e-f5269141e993)
+
 ```
 
 🚀 Advanced Wolfram Features to Implement
