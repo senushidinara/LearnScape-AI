@@ -1,4 +1,5 @@
-![IMG_3926](https://github.com/user-attachments/assets/024d0d07-7a99-4b1b-8b7f-a6a9da7df609)
+![IMG_3926](https://github.com/user-attachments/assets/024d0d07-7a99-4b1b-8b7f-a6a9da7df609)![Uploading IMG_59B593BB4225-1.jpeg…]()
+
 1. Wolfram-Powered Learning Simulations
 
 ```python
