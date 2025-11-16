@@ -21,7 +21,7 @@
 - No local development environment required
 
 #### Image 3: Team Collaboration in Action
-![Uploading IMG_8064.jpeg…]()
+![IMG_8064](https://github.com/user-attachments/assets/600ff634-b5b5-40a7-aaa1-968ae86b6bee)
 **Collaborative Breakthrough:**
 - Multiple developers viewing same cloud environment
 - Real-time code synchronization visible
