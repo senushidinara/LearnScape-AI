@@ -192,7 +192,7 @@ cline "Scale the LearnScape AI backend for production performance. Include: 1) D
 
 ## 🏆 Winning Strategy Summary
 
-### Why This Deserves the $1,500 Cline CLI Prize
+
 
 1. **Maximum Utilization**: 147 commands executed - highest demonstrated usage
 2. **Quality Results**: 94% test coverage maintained during rapid development
@@ -210,16 +210,21 @@ cline "Scale the LearnScape AI backend for production performance. Include: 1) D
 
 ---
 
-## 📸 Screenshots Required for DevPost
+## 📸 Screenshots
 
-### Screenshots to Include:
+### Screenshots ![IMG_48083080EE44-1](https://github.com/user-attachments/assets/ef54b536-0b39-438a-83b3-0c548bc1f6cb)
+![IMG_86E414FA316C-1](https://github.com/user-attachments/assets/826789d9-9be8-4388-882b-768ed4a54d6d)
+![IMG_13A780CD7DCD-1](https://github.com/user-attachments/assets/dab6fa22-9fb4-4b9f-a193-3c98ef73e829)
+![IMG_EE4A679106AB-1](https://github.com/user-attachments/assets/dbb6db99-7a7c-486d-bdf2-6d3494aa9827)
+![IMG_CE9FAC819A65-1](https://github.com/user-attachments/assets/aa913d7a-91b4-4f48-87a5-262470a4f83e)
+
 1. **Cline CLI Interface**: Show actual command execution
 2. **Generated Code**: Display code being created in real-time
 3. **Development Speed**: Timeline comparison showing rapid progress
 4. **Quality Metrics**: Test coverage and performance achievements
 5. **Final Product**: Working platform demonstration
 
-### DevPost Submission Text:
+###
 "Our project was built 89% using Cline CLI, executing 147 commands that generated over 9,000 lines of production-ready code in just 48 hours. This AI-assisted development approach enabled us to create a sophisticated educational platform that would typically require months of development."
 
-**This evidence clearly demonstrates exceptional Cline CLI utilization and positions LearnScape AI as the top contender for the Built with Cline CLI prize! 🚀**
+** exceptional Cline CLI utilization and positions LearnScape AI as the top contender for the Built with Cline CLI prize! 🚀**
