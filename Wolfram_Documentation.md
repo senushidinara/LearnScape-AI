@@ -1,4 +1,5 @@
-![IMG_3926](https://github.com/user-attachments/assets/024d0d07-7a99-4b1b-8b7f-a6a9da7df609)![Uploading IMG_59B593BB4225-1.jpeg…]()
+![IMG_3926](https://github.com/user-attachments/assets/024d0d07-7a99-4b1b-8b7f-a6a9da7df609)![IMG_59B593BB4225-1](https://github.com/user-attachments/assets/c0c1517c-fde6-42e8-93f0-7fdef19b0ac0)
+
 
 1. Wolfram-Powered Learning Simulations
 
@@ -13,7 +14,7 @@ class WolframLearningEngine:
         elif concept == "physics_projectile":
             return self._create_projectile_simulation(parameters)
         elif concept == "chemistry_reaction":
-            return self._create_chemical_simulation(parameters)
+            return iself._create_chemical_simulation(parameters)
         elif concept == "biology_ecosystem":
             return self._create_ecosystem_simulation(parameters)
 ```
@@ -52,7 +53,9 @@ def wolfram_problem_solver(problem_text):
         'problem': problem_text,
         'solution_steps': extract_solution_steps(solution),
         'interactive_elements': create_interactive_from_solution(solution),
-        'related_problems': generate_related_problems(solution)
+        'related_problems': generate_related_problems(solution)![IMG_59B593BB4225-1](https://github.com/user-attachments/assets/293ed896-6ec2-4e3c-8b6f-938834b59d6b)
+![IMG_59B593BB4225-1](https://github.com/user-attachments/assets/c49f48c3-3273-4ab9-9f61-b02412a73a76)
+
     }
 ```
 
