@@ -63,7 +63,7 @@ START CODING IN UNDER 1 MINUTE ⚡
 
 ## 🏆 Evidence for Prize Committees
 
-### For Cline CLI Prize ($1,500)
+### For Cline CLI 
 **"Not just using Cline - REDEFINING how Cline is used in hackathons"**
 
 **Evidence Points:**
@@ -92,8 +92,7 @@ START CODING IN UNDER 1 MINUTE ⚡
 - 🌍 Works on any device, anywhere in world
 - 🚀 Shows future of software development education
 
-## 📖 Narrative for Judges
-
+## 📖 Narrative
 ### The Problem We Solved
 "Traditional hackathon development is fundamentally broken. Teams waste precious hours fighting environment setup, struggle with 'works on my machine' issues, and are limited by local hardware. This innovation barrier reduces actual development time by 50-80%."
 
