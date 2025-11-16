@@ -128,7 +128,7 @@ We are the **FIRST EVER** project to document:
 
 ## 🎯 UNBEATABLE  POSITION
 
-### Why We <img width="3180" height="2384" alt="IMG_3903" src="https://github.com/user-attachments/assets/2d84f6a1-538f-4190-bb82-a4a8867f32d2" />
+### Why We 
 ![IMG_469852B3846C-1](https://github.com/user-attachments/assets/38cb1fee-f37d-42a4-ba30-9cf30d5225d5)
 
 1. **Most Cline Commands**: No other project has 147+ documented commands
